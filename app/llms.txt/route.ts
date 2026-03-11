@@ -1,11 +1,11 @@
-import { listPublishedPosts } from "@/lib/blogs";
+import { listPublishedPostsSafe } from "@/lib/blogs";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const posts = await listPublishedPosts(30);
+  const posts = await listPublishedPostsSafe(30);
 
   const lines = [
     `# ${SITE_NAME}`,

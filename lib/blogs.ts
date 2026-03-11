@@ -131,6 +131,15 @@ export async function listPublishedPosts(limit = 12): Promise<BlogPost[]> {
   return result.rows.map(mapBlogRow);
 }
 
+export async function listPublishedPostsSafe(limit = 12): Promise<BlogPost[]> {
+  try {
+    return await listPublishedPosts(limit);
+  } catch (error) {
+    console.error("Unable to load published posts. Returning empty list.", error);
+    return [];
+  }
+}
+
 export async function getPublishedPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isDatabaseConfigured()) {
     return null;
@@ -164,6 +173,15 @@ export async function getPublishedPostBySlug(slug: string): Promise<BlogPost | n
   }
 
   return mapBlogRow(result.rows[0]);
+}
+
+export async function getPublishedPostBySlugSafe(slug: string): Promise<BlogPost | null> {
+  try {
+    return await getPublishedPostBySlug(slug);
+  } catch (error) {
+    console.error(`Unable to load post by slug: ${slug}`, error);
+    return null;
+  }
 }
 
 export async function listRecentTopics(limit = 10): Promise<string[]> {

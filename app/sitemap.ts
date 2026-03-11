@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { listPublishedPosts } from "@/lib/blogs";
+import { listPublishedPostsSafe } from "@/lib/blogs";
 import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -36,19 +36,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  let postRoutes: MetadataRoute.Sitemap = [];
-
-  try {
-    const posts = await listPublishedPosts(1000);
-    postRoutes = posts.map((post) => ({
-      url: `${SITE_URL}/blogs/${post.slug}`,
-      lastModified: new Date(post.updatedAt),
-      changeFrequency: "weekly",
-      priority: 0.85,
-    }));
-  } catch (error) {
-    console.error("Sitemap generation fallback: unable to load blog posts.", error);
-  }
+  const posts = await listPublishedPostsSafe(1000);
+  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${SITE_URL}/blogs/${post.slug}`,
+    lastModified: new Date(post.updatedAt),
+    changeFrequency: "weekly",
+    priority: 0.85,
+  }));
 
   return [...staticRoutes, ...postRoutes];
 }

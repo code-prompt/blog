@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listPublishedPosts } from "@/lib/blogs";
+import { listPublishedPostsSafe } from "@/lib/blogs";
 import { extractKeywordCandidates } from "@/lib/seo";
 import { SITE_DESCRIPTION } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const posts = await listPublishedPosts(120);
+  const posts = await listPublishedPostsSafe(120);
   const blogKeywords = extractKeywordCandidates(posts, 80);
 
   return {
@@ -31,7 +31,7 @@ function formatDate(value: string) {
 }
 
 export default async function BlogsPage() {
-  const posts = await listPublishedPosts(36);
+  const posts = await listPublishedPostsSafe(36);
 
   const categories = [
     "All",

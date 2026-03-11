@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listPublishedPosts } from "@/lib/blogs";
+import { listPublishedPostsSafe } from "@/lib/blogs";
 import { extractKeywordCandidates } from "@/lib/seo";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const posts = await listPublishedPosts(60);
+  const posts = await listPublishedPostsSafe(60);
   const blogKeywords = extractKeywordCandidates(posts, 40);
 
   return {
@@ -31,7 +31,7 @@ function formatPublishedAt(value: string) {
 }
 
 export default async function HomePage() {
-  const posts = await listPublishedPosts(12);
+  const posts = await listPublishedPostsSafe(12);
   const featuredPost = posts[0] ?? null;
   const latestPosts = posts.slice(1, 7);
   const topicChips = [...new Set(posts.map((post) => post.topic))].slice(0, 8);

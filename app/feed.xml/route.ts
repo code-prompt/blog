@@ -1,4 +1,4 @@
-import { listPublishedPosts } from "@/lib/blogs";
+import { listPublishedPostsSafe } from "@/lib/blogs";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ function xmlEscape(value: string) {
 }
 
 export async function GET() {
-  const posts = await listPublishedPosts(100);
+  const posts = await listPublishedPostsSafe(100);
 
   const items = posts
     .map((post) => {

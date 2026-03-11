@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { mdxComponents } from "@/app/components/mdx-components";
-import { getPublishedPostBySlug } from "@/lib/blogs";
+import { getPublishedPostBySlugSafe } from "@/lib/blogs";
 import { postKeywords } from "@/lib/seo";
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -25,7 +25,7 @@ function formatDate(value: string) {
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPublishedPostBySlug(slug);
+  const post = await getPublishedPostBySlugSafe(slug);
 
   if (!post) {
     return {
@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
 export default async function BlogPostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = await getPublishedPostBySlug(slug);
+  const post = await getPublishedPostBySlugSafe(slug);
 
   if (!post) {
     notFound();
