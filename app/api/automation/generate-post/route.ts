@@ -4,15 +4,46 @@ import { runAutomatedBlogFlow } from "@/lib/blog-automation";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function isAuthorized(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
+function normalizeSecret(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
 
-  if (!cronSecret) {
+  const trimmed = value.trim();
+  const hasDoubleQuotes = trimmed.startsWith('"') && trimmed.endsWith('"');
+  const hasSingleQuotes = trimmed.startsWith("'") && trimmed.endsWith("'");
+
+  if ((hasDoubleQuotes || hasSingleQuotes) && trimmed.length >= 2) {
+    return trimmed.slice(1, -1).trim();
+  }
+
+  return trimmed;
+}
+
+function tokenFromAuthorizationHeader(authorization: string | null) {
+  if (!authorization) {
+    return "";
+  }
+
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+  return normalizeSecret(match?.[1] ?? "");
+}
+
+function isAuthorized(request: Request) {
+  const expectedSecret = normalizeSecret(process.env.CRON_SECRET);
+
+  if (!expectedSecret) {
     return true;
   }
 
-  const authHeader = request.headers.get("authorization");
-  return authHeader === `Bearer ${cronSecret}`;
+  const url = new URL(request.url);
+  const providedSecrets = [
+    tokenFromAuthorizationHeader(request.headers.get("authorization")),
+    normalizeSecret(request.headers.get("x-cron-secret")),
+    normalizeSecret(url.searchParams.get("secret")),
+  ].filter((value) => value.length > 0);
+
+  return providedSecrets.some((value) => value === expectedSecret);
 }
 
 async function handleRequest(request: Request) {
