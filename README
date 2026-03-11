@@ -1,0 +1,52 @@
+# CodePrompt Blog
+
+CodePrompt Blog is a developer-first, AI-powered publishing platform that generates and publishes market-trend blog posts automatically.
+
+## What it does
+
+- Fetches trending topics from live feeds
+- Selects relevant non-repetitive topics
+- Uses Gemini to generate structured **MDX** blog content
+- Stores posts in PostgreSQL (Neon)
+- Publishes to SEO-optimized blog pages
+- Runs automatically **3 times daily** via cron
+
+## Tech stack
+
+- **Next.js 16** (App Router, TypeScript)
+- **PostgreSQL (Neon)**
+- **Gemini API**
+- **MDX rendering** (`next-mdx-remote`)
+- **Tailwind CSS v4**
+- **Vercel Cron**
+
+## Routes
+
+- `/` Home
+- `/blogs` Blog archive
+- `/blogs/[slug]` Blog detail
+- `/system-design` Architecture and implementation guide
+- `/about`, `/contact`
+- `/api/automation/generate-post` Automated publishing endpoint
+- `/sitemap.xml`, `/robots.txt`, `/feed.xml`, `/llms.txt`
+
+## SEO features
+
+- Dynamic metadata and keyword enrichment from blog content
+- JSON-LD schema (`Organization`, `WebSite`, `BlogPosting`, `ItemList`)
+- Canonical URLs + Open Graph + Twitter cards
+- XML sitemap + RSS feed + AI crawler discovery (`llms.txt`)
+
+## Environment variables
+
+- `GEMINI_API_KEY`
+- `DATABASE_URL`
+- `CRON_SECRET`
+- `GEMINI_MODEL` (default: `gemini-flash-lite-latest`)
+- `TRENDING_RSS_URL` (optional)
+
+## Local setup
+
+```bash
+npm install
+npm run dev
