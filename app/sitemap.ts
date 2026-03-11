@@ -1,6 +1,18 @@
 import type { MetadataRoute } from "next";
+import type { BlogPost } from "@/lib/blogs";
 import { listPublishedPostsSafe } from "@/lib/blogs";
 import { SITE_URL } from "@/lib/site";
+
+export const revalidate = 1800;
+
+async function loadPostsForSitemap(): Promise<BlogPost[]> {
+  return Promise.race([
+    listPublishedPostsSafe(1000),
+    new Promise<BlogPost[]>((resolve) => {
+      setTimeout(() => resolve([]), 1500);
+    }),
+  ]);
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -36,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const posts = await listPublishedPostsSafe(1000);
+  const posts = await loadPostsForSitemap();
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${SITE_URL}/blogs/${post.slug}`,
     lastModified: new Date(post.updatedAt),
